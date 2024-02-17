@@ -1,6 +1,11 @@
 <template>
   <div>
-    <button class="enableEthereumButton" @click="getAccount">Enable Ethereum</button>
+    <button class="enableEthereumButton" @click="getAccount">
+      Enable Ethereum for browser
+    </button>
+    <button class="enableEthereumButton" @click="connectToMetaMask()">
+      Enable Ethereum for mobile
+    </button>
     <div class="showAccount">Account: {{ account }}</div>
     <div class="showBalance">Balance: {{ balance }} ETH</div>
     <button class="sendEthButton" @click="sendEth">Send Ethereum</button>
@@ -9,18 +14,53 @@
 
 <script>
 import detectEthereumProvider from "@metamask/detect-provider";
+import { MetaMaskSDK } from "@metamask/sdk";
 
 export default {
   data() {
     return {
       account: null,
       balance: null,
+      MMSDK: null,
     };
   },
   mounted() {
     this.detectProvider();
+    this.initializeMetaMask();
   },
   methods: {
+    async initializeMetaMask() {
+      const protocol = window.location.protocol;
+      const host = window.location.host;
+      const url = protocol + "//" + host;
+
+      this.MMSDK = new MetaMaskSDK({
+        dappMetadata: {
+          name: "Example JavaScript Dapp",
+          url: url,
+        },
+      });
+    },
+    async connectToMetaMask() {
+      if (!this.MMSDK) {
+        console.error("MetaMask SDK not initialized.");
+        return;
+      }
+
+      const ethereum = this.MMSDK.getProvider();
+
+      try {
+        const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+        this.account = accounts[0];
+      } catch (err) {
+        if (err.code === 4001) {
+          console.log("Please connect to MetaMask.");
+        } else {
+          console.error(err);
+        }
+      }
+    },
+
     async detectProvider() {
       const provider = await detectEthereumProvider();
       if (provider) {
