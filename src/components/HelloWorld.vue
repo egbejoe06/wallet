@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button class="enableEthereumButton" @click="getAccount">
+    <button class="enableEthereumButton bg-red-50" @click="getAccount">
       Enable Ethereum for browser
     </button>
     <button class="enableEthereumButton" @click="connectToMetaMask()">

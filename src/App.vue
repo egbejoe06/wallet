@@ -1,11 +1,11 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
+<script setup></script>
 
 <template>
-
- <div class="none"> <HelloWorld /></div>
+  <router-view />
 </template>
 
-<style scoped>
+<style>
+* {
+  box-sizing: border-box;
+}
 </style>
