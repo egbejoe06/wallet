@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between">
+  <div class="flex justify-between" :style="{ opacity: showConnect ? '0.3' : '1' }">
     <div class="flex gap-3 sd:hidden md:flex">
       <div class="flex items-center">
         <svg
@@ -79,6 +79,7 @@
       </div>
       <div>
         <button
+          @click="toggle()"
           class="bg-primary pt-3 pb-3 px-5 rounded-md text-black sd:py-2 sd:px-4 sd:text-xs md:py-3 md:px-5 md:text-base"
         >
           Connect
@@ -88,7 +89,23 @@
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { useStore } from "../store/store.js";
 
+const showConnect = ref(null);
+
+const toggle = () => {
+  console.log("hello");
+  useStore().isConnect = !useStore().isConnect;
+};
+onMounted(() => {
+  showConnect.value = useStore().isConnect;
+}),
+  watch(
+    () => useStore().isConnect,
+    (newValue) => {
+      showConnect.value = newValue;
+    }
+  );
 const showDraftMessage = ref(false);
 </script>

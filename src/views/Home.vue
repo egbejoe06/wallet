@@ -1,10 +1,14 @@
 <template>
   <div
     style="font-family: Inter, Helvetica Neue, sans-serif"
-    class="p-5 bg-black flex flex-col gap-8 text-primary sd:p-4 sd:text-sm md:text-base p-5"
+    class="p-5 bg-black flex flex-col gap-8 relative text-primary sd:p-4 sd:text-sm md:text-base p-5"
   >
     <Nav />
-    <div class="flex flex-col gap-3.5 px-8 sd:p-0 md:px-8">
+    <Connect />
+    <div
+      class="flex flex-col gap-3.5 px-8 sd:p-0 md:px-8"
+      :style="{ opacity: showConnect ? '0.3' : '1' }"
+    >
       <div
         class="flex bg-bg h-10 w-40 border-disable text-textdisable border gap-2 rounded-lg items-center justify-center"
       >
@@ -38,7 +42,10 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col gap-3.5 px-8 sd:p-0 md:px-8">
+    <div
+      class="flex flex-col gap-3.5 px-8 sd:p-0 md:px-8"
+      :style="{ opacity: showConnect ? '0.3' : '1' }"
+    >
       <div class="flex justify-between">
         <span>Proposal Results</span>
         <span
@@ -84,7 +91,10 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col gap-3.5 px-8 sd:p-0 md:px-8">
+    <div
+      class="flex flex-col gap-3.5 px-8 sd:p-0 md:px-8"
+      :style="{ opacity: showConnect ? '0.3' : '1' }"
+    >
       <div>Message</div>
       <div>
         <div class="bg-bg rounded-md w-full">
@@ -100,11 +110,21 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { useStore } from "../store/store.js";
 import Nav from "../components/Nav.vue";
 import Footers from "../components/Footers.vue";
+import Connect from "../components/Connect.vue";
 
 const jsonData = ref(null);
+const showConnect = ref(null);
+
+watch(
+  () => useStore().isConnect,
+  (newValue) => {
+    showConnect.value = newValue;
+  }
+);
 
 const data = {
   root: {
@@ -123,6 +143,7 @@ const data = {
 
 onMounted(() => {
   jsonData.value = JSON.stringify(data, null, 2);
+  showConnect.value = useStore().isConnect;
 });
 </script>
 <style>
