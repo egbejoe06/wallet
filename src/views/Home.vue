@@ -1,7 +1,7 @@
 <template>
   <div
     style="font-family: Inter, Helvetica Neue, sans-serif"
-    class="p-5 bg-black flex flex-col gap-8 text-primary sd:p-4 text-sm md:text-base p-5"
+    class="p-5 bg-black flex flex-col gap-8 text-primary sd:p-4 sd:text-sm md:text-base p-5"
   >
     <Nav />
     <div class="flex flex-col gap-3.5 px-8 sd:p-0 md:px-8">

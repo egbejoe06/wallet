@@ -40,36 +40,55 @@
       </div>
     </div>
     <div class="flex gap-3 items-center sd:justify-between w-full md:w-auto">
-      <div
-        class="flex bg-bg h-10 border-disable border pl-2.5 gap-2 rounded-lg items-center justify-center"
-      >
-        <div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            x="0px"
-            y="0px"
-            width="25"
-            height="25"
-            viewBox="0 0 50 50"
-          >
-            <path
-              fill="#f1e1d4"
-              d="M 21 3 C 11.621094 3 4 10.621094 4 20 C 4 29.378906 11.621094 37 21 37 C 24.710938 37 28.140625 35.804688 30.9375 33.78125 L 44.09375 46.90625 L 46.90625 44.09375 L 33.90625 31.0625 C 36.460938 28.085938 38 24.222656 38 20 C 38 10.621094 30.378906 3 21 3 Z M 21 5 C 29.296875 5 36 11.703125 36 20 C 36 28.296875 29.296875 35 21 35 C 12.703125 35 6 28.296875 6 20 C 6 11.703125 12.703125 5 21 5 Z"
-            ></path>
-          </svg>
+      <div class="flex flex-col relative">
+        <div
+          class="flex bg-bg h-10 border-disable border pl-2.5 gap-2 rounded-lg items-center justify-center sd:h-8 md:h-10"
+        >
+          <div>
+            <svg
+              class="sd:w-4 md:w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              x="0px"
+              y="0px"
+              width="25"
+              height="25"
+              viewBox="0 0 50 50"
+            >
+              <path
+                fill="#f1e1d4"
+                d="M 21 3 C 11.621094 3 4 10.621094 4 20 C 4 29.378906 11.621094 37 21 37 C 24.710938 37 28.140625 35.804688 30.9375 33.78125 L 44.09375 46.90625 L 46.90625 44.09375 L 33.90625 31.0625 C 36.460938 28.085938 38 24.222656 38 20 C 38 10.621094 30.378906 3 21 3 Z M 21 5 C 29.296875 5 36 11.703125 36 20 C 36 28.296875 29.296875 35 21 35 C 12.703125 35 6 28.296875 6 20 C 6 11.703125 12.703125 5 21 5 Z"
+              ></path>
+            </svg>
+          </div>
+          <div>
+            <input
+              @focus="showDraftMessage = true"
+              @blur="showDraftMessage = false"
+              class="bg-transparent outline-none text-primary sd:w-4/5"
+              type="text"
+              placeholder="Search RollApps.."
+            />
+          </div>
         </div>
-        <div>
-          <input
-            class="bg-transparent outline-none text-primary sd:w-4/5"
-            type="text"
-            placeholder="Search RollApps.."
-          />
+        <div
+          v-if="showDraftMessage"
+          class="absolute top-9 left-3 px-4 py-4 text-disable z-20 rounded-md bg-black"
+        >
+          <span>The Draft is coming soon</span>
         </div>
       </div>
       <div>
-        <button class="bg-primary pt-3 pb-3 px-5 rounded-md text-black">Connect</button>
+        <button
+          class="bg-primary pt-3 pb-3 px-5 rounded-md text-black sd:py-2 sd:px-4 sd:text-xs md:py-3 md:px-5 md:text-base"
+        >
+          Connect
+        </button>
       </div>
     </div>
   </div>
 </template>
-<script setup></script>
+<script setup>
+import { ref } from "vue";
+
+const showDraftMessage = ref(false);
+</script>
