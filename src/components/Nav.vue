@@ -1,5 +1,8 @@
 <template>
-  <div class="flex justify-between" :style="{ opacity: showConnect ? '0.3' : '1' }">
+  <div
+    class="flex justify-between w-full"
+    :style="{ opacity: showConnect ? '0.3' : '1' }"
+  >
     <div class="flex gap-3 sd:hidden md:flex">
       <div class="flex items-center">
         <svg

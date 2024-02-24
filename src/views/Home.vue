@@ -1,12 +1,12 @@
 <template>
   <div
     style="font-family: Inter, Helvetica Neue, sans-serif"
-    class="p-5 bg-black flex flex-col gap-8 relative text-primary sd:p-4 sd:text-sm md:text-base p-5"
+    class="p-5 bg-black flex flex-col gap-8 relative text-primary sd:p-4 sd:text-sm md:text-base p-5 items-center"
   >
     <Nav />
-    <Connect />
+    <Connect class="w-full" />
     <div
-      class="flex flex-col gap-3.5 px-8 sd:p-0 md:px-8"
+      class="flex flex-col gap-3.5 px-8 sd:p-0 md:px-8 w-full"
       :style="{ opacity: showConnect ? '0.3' : '1' }"
     >
       <div
@@ -43,7 +43,7 @@
       </div>
     </div>
     <div
-      class="flex flex-col gap-3.5 px-8 sd:p-0 md:px-8"
+      class="flex flex-col gap-3.5 px-8 sd:p-0 md:px-8 w-full"
       :style="{ opacity: showConnect ? '0.3' : '1' }"
     >
       <div class="flex justify-between">
