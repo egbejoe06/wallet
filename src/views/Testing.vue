@@ -1,108 +1,56 @@
 <template>
   <div>
-    <button
-      v-if="!connected"
-      class="p-5 border border-disable rounded-lg bg-black text-red-700"
-      @click="connectWallet"
-    >
-      Connect Wallet
-    </button>
-    <div v-else>
-      <p>Connected Account: {{ selectedAccount }}</p>
-      <p>Chain ID: {{ chainId }}</p>
-      <button v-if="chainId !== '0x1'" @click="switchChain">Switch to Ethereum</button>
-      <p v-if="error" style="color: red">{{ error }}</p>
-    </div>
+    <h1>Connect Your Wallet</h1>
+    <p>Click the button below to connect your wallet:</p>
+    <button @click="openModal">Connect Wallet</button>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      initializing: true,
-      injectedProvider: null,
-      initializationError: "",
-      connected: false,
-      selectedAccount: "",
-      chainId: "",
-      error: "",
-    };
-  },
-  methods: {
-    async connectWallet() {
-      try {
-        this.error = "";
+<script setup>
+import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi";
+import { mainnet, arbitrum } from "viem/chains";
+import { reconnect } from "@wagmi/core";
 
-        if (!window.ethereum && !window.web3) {
-          this.error = "Mobile wallet not detected.";
-          this.initializing = false;
-          return;
-        }
+const projectId = "YOUR_PROJECT_ID";
 
-        this.injectedProvider = window.ethereum || window.web3.currentProvider;
+const metadata = {
+  name: "Web3Modal",
+  description: "Web3Modal Example",
+  url: "https://web3modal.com",
+  icons: ["https://avatars.githubusercontent.com/u/37784886"],
+};
 
-        const accounts = await this.injectedProvider.request({
-          method: "eth_requestAccounts",
-        });
+const chains = [mainnet, arbitrum];
+const config = defaultWagmiConfig({
+  chains,
+  projectId,
+  metadata,
+  enableWalletConnect: true,
+  enableInjected: true,
+  enableEIP6963: true,
+  enableCoinbase: true,
+});
 
-        const chainId = await this.injectedProvider.request({ method: "eth_chainId" });
+reconnect(config);
 
-        this.selectedAccount = accounts[0];
-        this.chainId = chainId;
-        this.connected = true;
-
-        this.injectedProvider.addListener("chainChanged", this.updateChainId);
-
-        this.injectedProvider.addListener("accountsChanged", (accounts) => {
-          if (accounts.length === 0) {
-            this.connected = false;
-            this.selectedAccount = "";
-            this.chainId = "";
-          } else {
-            const connectedAccount = accounts[0];
-            this.selectedAccount = connectedAccount;
-          }
-        });
-      } catch (e) {
-        console.error(e);
-        if (e.code === 4001) {
-          this.error = "User denied connection.";
-        }
-      }
-    },
-    async switchChain() {
-      try {
-        await this.injectedProvider.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x1" }],
-        });
-      } catch (e) {
-        console.error(e);
-        if (e.code === 4001) {
-          this.error = "User rejected switching chains.";
-        }
-      }
-    },
-    updateChainId(chainId) {
-      this.chainId = chainId;
-    },
-  },
-  async mounted() {
-    try {
-      if (!window.ethereum && !window.web3) {
-        this.initializationError = "Mobile wallet not detected.";
-        this.initializing = false;
-        return;
-      }
-
-      this.injectedProvider = window.ethereum || window.web3.currentProvider;
-      this.initializing = false;
-    } catch (error) {
-      console.error(error);
-      this.initializationError = "Failed to initialize mobile wallet.";
-      this.initializing = false;
-    }
-  },
+const openModal = () => {
+  const web3Modal = createWeb3Modal({
+    wagmiConfig: config,
+    projectId,
+    enableAnalytics: true,
+  });
+  web3Modal
+    .open()
+    .then((provider) => {
+      // Handle successful connection here
+      console.log("Connected:", provider);
+    })
+    .catch((error) => {
+      console.error("Connection Error:", error);
+    });
 };
 </script>
+
+<style scoped>
+/* Add your styles here if needed */
+</style>
