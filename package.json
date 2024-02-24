@@ -11,6 +11,7 @@
   "dependencies": {
     "@metamask/detect-provider": "^2.0.0",
     "@metamask/sdk": "^0.15.0",
+    "@trustwallet/wallet-core": "^4.0.24",
     "pinia": "^2.1.7",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"

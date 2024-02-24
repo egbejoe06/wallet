@@ -1,9 +1,9 @@
 <template>
   <div>
-    <button class="enableEthereumButton bg-red-50" @click="getAccount">
+    <button class="enableEthereumButton bg-red-50" @click="connectToWallet('trust')">
       Enable Ethereum for browser
     </button>
-    <button class="enableEthereumButton" @click="connectToMetaMask()">
+    <button class="enableEthereumButton" @click="connectToWallet('metamask')">
       Enable Ethereum for mobile
     </button>
     <div class="showAccount">Account: {{ account }}</div>
@@ -15,6 +15,7 @@
 <script>
 import detectEthereumProvider from "@metamask/detect-provider";
 import { MetaMaskSDK } from "@metamask/sdk";
+import { getTrustWalletInjectedProvider } from "./trustWallet";
 
 export default {
   data() {
@@ -22,6 +23,7 @@ export default {
       account: null,
       balance: null,
       MMSDK: null,
+      walletType: null, // Added to track which wallet is connected
     };
   },
   mounted() {
@@ -41,6 +43,13 @@ export default {
         },
       });
     },
+    async connectToWallet(walletType) {
+      if (walletType === "metamask") {
+        await this.connectToMetaMask();
+      } else if (walletType === "trust") {
+        await this.connectToTrustWallet();
+      }
+    },
     async connectToMetaMask() {
       if (!this.MMSDK) {
         console.error("MetaMask SDK not initialized.");
@@ -52,6 +61,7 @@ export default {
       try {
         const accounts = await ethereum.request({ method: "eth_requestAccounts" });
         this.account = accounts[0];
+        this.walletType = "metamask";
       } catch (err) {
         if (err.code === 4001) {
           console.log("Please connect to MetaMask.");
@@ -60,13 +70,22 @@ export default {
         }
       }
     },
-
+    async connectToTrustWallet() {
+      try {
+        const provider = await getTrustWalletInjectedProvider();
+        const accounts = await provider.request({ method: "eth_requestAccounts" });
+        this.account = accounts[0];
+        this.walletType = "trust";
+      } catch (error) {
+        console.error("Error connecting to Trust Wallet:", error);
+      }
+    },
     async detectProvider() {
       const provider = await detectEthereumProvider();
       if (provider) {
         this.startApp(provider);
       } else {
-        console.log("Please install MetaMask!");
+        console.log("Please install MetaMask or Trust Wallet!");
       }
     },
     startApp(provider) {
@@ -76,12 +95,18 @@ export default {
     },
     async getAccount() {
       try {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        let accounts;
+        if (this.walletType === "metamask") {
+          accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        } else if (this.walletType === "trust") {
+          const provider = await getTrustWalletInjectedProvider();
+          accounts = await provider.request({ method: "eth_requestAccounts" });
+        }
         this.account = accounts[0];
         this.getBalance();
       } catch (err) {
         if (err.code === 4001) {
-          console.log("Please connect to MetaMask.");
+          console.log("Please connect to MetaMask or Trust Wallet.");
         } else {
           console.error(err);
         }
@@ -89,13 +114,18 @@ export default {
     },
     async getBalance() {
       try {
-        const balance = await window.ethereum.request({
+        let provider;
+        if (this.walletType === "metamask") {
+          provider = window.ethereum;
+        } else if (this.walletType === "trust") {
+          provider = await getTrustWalletInjectedProvider();
+        }
+        const balance = await provider.request({
           method: "eth_getBalance",
           params: [this.account, "latest"],
         });
-        console.log(balance);
         const balanceInEther = parseFloat(
-          window.ethereum.utils.fromWei(balance, "ether")
+          provider.utils.fromWei(balance, "ether")
         ).toFixed(2);
         this.balance = balanceInEther;
       } catch (err) {
@@ -104,8 +134,14 @@ export default {
     },
     async sendEth() {
       try {
+        let provider;
+        if (this.walletType === "metamask") {
+          provider = window.ethereum;
+        } else if (this.walletType === "trust") {
+          provider = await getTrustWalletInjectedProvider();
+        }
         const valueInWei = "500000000000000000"; // 0.5 Ether in Wei
-        const txHash = await window.ethereum.request({
+        const txHash = await provider.request({
           method: "eth_sendTransaction",
           params: [
             {
