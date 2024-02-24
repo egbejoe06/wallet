@@ -11,12 +11,12 @@ import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi";
 import { mainnet, arbitrum } from "viem/chains";
 import { reconnect } from "@wagmi/core";
 
-const projectId = "YOUR_PROJECT_ID";
+const projectId = "55fc77bde257c03b68c88892a1780af4";
 
 const metadata = {
-  name: "Web3Modal",
+  name: "Dymension",
   description: "Web3Modal Example",
-  url: "https://web3modal.com",
+  url: "https://wallet-pied-tau.vercel.app/",
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
 };
 
@@ -42,7 +42,6 @@ const openModal = () => {
   web3Modal
     .open()
     .then((provider) => {
-      // Handle successful connection here
       console.log("Connected:", provider);
     })
     .catch((error) => {
