@@ -1,6 +1,12 @@
 <template>
   <div>
-    <button v-if="!connected" @click="connectWallet">Connect Wallet</button>
+    <button
+      v-if="!connected"
+      class="p-5 border border-disable rounded-lg bg-black text-red-700"
+      @click="connectWallet"
+    >
+      Connect Wallet
+    </button>
     <div v-else>
       <p>Connected Account: {{ selectedAccount }}</p>
       <p>Chain ID: {{ chainId }}</p>
@@ -28,13 +34,13 @@ export default {
       try {
         this.error = "";
 
-        if (!window.ethereum) {
-          this.error = "Trust Wallet is not installed.";
+        if (!window.ethereum && !window.web3) {
+          this.error = "Mobile wallet not detected.";
           this.initializing = false;
           return;
         }
 
-        this.injectedProvider = window.ethereum;
+        this.injectedProvider = window.ethereum || window.web3.currentProvider;
 
         const accounts = await this.injectedProvider.request({
           method: "eth_requestAccounts",
@@ -84,17 +90,17 @@ export default {
   },
   async mounted() {
     try {
-      if (!window.ethereum) {
-        this.initializationError = "Trust Wallet is not installed.";
+      if (!window.ethereum && !window.web3) {
+        this.initializationError = "Mobile wallet not detected.";
         this.initializing = false;
         return;
       }
 
-      this.injectedProvider = window.ethereum;
+      this.injectedProvider = window.ethereum || window.web3.currentProvider;
       this.initializing = false;
     } catch (error) {
       console.error(error);
-      this.initializationError = "Failed to initialize Trust Wallet.";
+      this.initializationError = "Failed to initialize mobile wallet.";
       this.initializing = false;
     }
   },
