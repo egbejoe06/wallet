@@ -1,67 +1,67 @@
 <template>
   <div>
-    <h2>Trust Wallet Integration</h2>
-    <p v-if="connected">Connected to Trust Wallet</p>
-    <p v-else>Not connected to Trust Wallet</p>
-    <button @click="connectWallet">Connect Wallet</button>
+    <button @click="connectWallet">Connect to Trust Wallet</button>
     <div v-if="connected">
-      <p>Wallet Address: {{ walletAddress }}</p>
-      <p>Network: {{ network }}</p>
+      Connected to Trust Wallet
+      <button @click="disconnectWallet">Disconnect</button>
     </div>
   </div>
 </template>
 
 <script>
+import Web3 from "web3";
+
 export default {
   data() {
     return {
       connected: false,
-      walletAddress: null,
-      network: null,
+      web3: null,
+      accounts: [],
     };
   },
   methods: {
     async connectWallet() {
       if (window.ethereum) {
         try {
+          // Request account access
           await window.ethereum.request({ method: "eth_requestAccounts" });
+          this.web3 = new Web3(window.ethereum);
+          this.accounts = await this.web3.eth.getAccounts();
           this.connected = true;
-          this.walletAddress = window.ethereum.selectedAddress;
-          this.network = await this.getNetwork();
         } catch (error) {
-          console.error(error);
+          console.error("User denied account access");
         }
       } else {
-        console.error("Trust Wallet or compatible Ethereum wallet not found");
+        console.error("Trust Wallet not detected");
       }
     },
-    async getNetwork() {
-      const provider = window.ethereum;
-      const networkId = await provider.request({ method: "net_version" });
-      switch (networkId) {
-        case "1":
-          return "Mainnet";
-        case "3":
-          return "Ropsten";
-        case "4":
-          return "Rinkeby";
-        case "5":
-          return "Goerli";
-        case "42":
-          return "Kovan";
-        default:
-          return "Unknown Network";
-      }
+    disconnectWallet() {
+      this.connected = false;
+      this.web3 = null;
+      this.accounts = [];
     },
   },
-  mounted() {
-    if (window.ethereum && window.ethereum.selectedAddress) {
-      this.connected = true;
-      this.walletAddress = window.ethereum.selectedAddress;
-      this.getNetwork().then((network) => {
-        this.network = network;
+  created() {
+    if (window.ethereum) {
+      window.ethereum.autoRefreshOnNetworkChange = false;
+      this.web3 = new Web3(window.ethereum);
+      this.web3.eth.net.getId().then((networkId) => {
+        console.log("Network ID:", networkId);
+        // Check if Trust Wallet is connected already
+        this.web3.eth.getAccounts().then((accounts) => {
+          if (accounts.length > 0) {
+            this.connected = true;
+            this.accounts = accounts;
+          }
+        });
       });
+    } else {
+      console.error("Trust Wallet not detected");
     }
   },
 };
 </script>
+
+<style scoped>
+/* Styles if needed */
+</style>
