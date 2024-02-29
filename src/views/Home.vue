@@ -113,6 +113,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useStore } from "../store/store.js";
 import Nav from "../components/Nav.vue";
+import Connected from "../components/Connected.vue";
 import Footers from "../components/Footers.vue";
 import Connect from "../components/Connect.vue";
 
